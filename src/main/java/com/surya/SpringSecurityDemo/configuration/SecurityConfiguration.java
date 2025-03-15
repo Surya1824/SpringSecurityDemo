@@ -1,5 +1,7 @@
 package com.surya.SpringSecurityDemo.configuration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +30,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+    private final Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
+
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -50,7 +54,7 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityConfig(HttpSecurity httpSecurity) throws Exception {
-
+        logger.info("filter chain Entry");
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.authorizeHttpRequests(request -> request.requestMatchers("/register", "/login").permitAll().anyRequest().authenticated());
 //        httpSecurity.formLogin(Customizer.withDefaults());
@@ -58,6 +62,7 @@ public class SecurityConfiguration {
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
+        logger.info("filter chain exit");
         return httpSecurity.build();
     }
 
